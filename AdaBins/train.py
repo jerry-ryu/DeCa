@@ -22,8 +22,8 @@ from loss import SILogLoss, BinsChamferLoss
 from utils import RunningAverage, colorize
 
 # os.environ['WANDB_MODE'] = 'dryrun'
-PROJECT = "MDE-AdaBins"
-logging = True
+PROJECT = "EE"
+logging = False
 
 
 def is_rank_zero(args):
@@ -179,6 +179,7 @@ def train(model, args, epochs=10, experiment_name="DeepLab", lr=0.0001, root="."
             optimizer.zero_grad()
 
             img = batch['image'].to(device)
+            print(img.size())
             depth = batch['depth'].to(device)
             if 'has_valid_depth' in batch:
                 if not batch['has_valid_depth']:
@@ -221,12 +222,13 @@ def train(model, args, epochs=10, experiment_name="DeepLab", lr=0.0001, root="."
                     }, step=step)
 
                     wandb.log({f"Metrics/{k}": v for k, v in metrics.items()}, step=step)
-                    model_io.save_checkpoint(model, optimizer, epoch, f"{experiment_name}_{run_id}_latest.pt",
-                                             root=os.path.join(root, "checkpoints"))
+                    model_io.save_checkpoint(model, optimizer, epoch, f"{epoch}_latest.pt",
+                                             root=os.path.join(root, f"checkpoints_{experiment_name}"))
 
                 if metrics['abs_rel'] < best_loss and should_write:
-                    model_io.save_checkpoint(model, optimizer, epoch, f"{experiment_name}_{run_id}_best.pt",
-                                             root=os.path.join(root, "checkpoints"))
+                    print(f"{epoch} is the best!")
+                    model_io.save_checkpoint(model, optimizer, epoch, f"best.pt",
+                                             root=os.path.join(root, f"checkpoints_{experiment_name}"))
                     best_loss = metrics['abs_rel']
                 model.train()
                 #################################################################################################
@@ -324,6 +326,7 @@ if __name__ == '__main__':
 
     parser.add_argument("--workers", default=11, type=int, help="Number of workers for data loading")
     parser.add_argument("--dataset", default='nyu', type=str, help="Dataset to train on")
+    parser.add_argument("--eval_dataset", default='nyu', type=str, help="Dataset to eval on")
 
     parser.add_argument("--data_path", default='../dataset/nyu/sync/', type=str,
                         help="path to dataset")
