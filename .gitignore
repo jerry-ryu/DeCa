@@ -1,0 +1,8 @@
+/AdaBins/wandb*
+/AdaBins/checkpoints_adabins_sun_only
+
+__pycache__
+
+PIDNet/log
+PIDNet/output
+PIDNet/pretrained_models
