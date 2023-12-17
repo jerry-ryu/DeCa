@@ -61,7 +61,7 @@ class OhemCrossEntropy(nn.Module):
         return loss
 
     def _ohem_forward(self, score, target, **kwargs):
-        
+
         pred = F.softmax(score, dim=1)
         pixel_losses = self.criterion(score, target).contiguous().view(-1)
         mask = target.contiguous().view(-1) != self.ignore_label
@@ -72,7 +72,6 @@ class OhemCrossEntropy(nn.Module):
         pred, ind = pred.contiguous().view(-1,)[mask].contiguous().sort()
         min_value = pred[min(self.min_kept, pred.numel() - 1)]
         threshold = max(min_value, self.thresh)
-        threshold = self.thresh
 
         pixel_losses = pixel_losses[mask][ind]
         pixel_losses = pixel_losses[pred < threshold]

@@ -10,6 +10,7 @@ from PIL import Image
 import cv2
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
+import cv2
 
 
 def _is_pil_image(img):
@@ -106,6 +107,9 @@ class DataLoadPreprocess(Dataset):
                 depth_path = os.path.join(self.args.gt_path, remove_leading_slash(sample_path.split()[1]))
                 seg_path = os.path.join(self.args.gt_path, remove_leading_slash(sample_path.split()[2]))
                 
+            # image = Image.open(image_path)
+            # depth_gt = Image.open(depth_path)
+            # seg_gt = Image.open(seg_path)
             image = Image.open(image_path)
             depth_gt = Image.open(depth_path)
             seg_gt = Image.open(seg_path)

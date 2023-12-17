@@ -134,7 +134,7 @@ class PIDNet(nn.Module):
         return layer
 
     def forward(self, x):
-        
+
         width_output = x.shape[-1] // 8
         height_output = x.shape[-2] // 8
 
@@ -146,12 +146,10 @@ class PIDNet(nn.Module):
         
         x = self.relu(self.layer3(x))
         x_ = self.pag3(x_, self.compression3(x))
-
         x_d = x_d + F.interpolate(
                         self.diff3(x),
                         size=[height_output, width_output],
                         mode='bilinear', align_corners=algc)
-    
         if self.augment:
             temp_p = x_
         

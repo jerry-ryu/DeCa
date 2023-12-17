@@ -93,7 +93,6 @@ def main():
                         crop_size=crop_size,
                         scale_factor=config.TRAIN.SCALE_FACTOR,
                         mode = "train")
-
     trainloader = torch.utils.data.DataLoader(
         train_dataset,
         batch_size=batch_size,
@@ -101,14 +100,14 @@ def main():
         num_workers=config.WORKERS,
         pin_memory=False,
         drop_last=True)
-
+    
 
     test_size = (config.TEST.IMAGE_SIZE[1], config.TEST.IMAGE_SIZE[0])
     test_dataset = eval('datasets.'+config.DATASET.DATASET)(
                         root=config.DATASET.ROOT,
                         list_path=config.DATASET.TEST_SET,
                         num_classes=config.DATASET.NUM_CLASSES,
-                        multi_scale=config.TEST.MULTI_SCALE,
+                        multi_scale=False,
                         flip=False,
                         ignore_label=config.TRAIN.IGNORE_LABEL,
                         base_size=config.TEST.BASE_SIZE,
@@ -124,13 +123,17 @@ def main():
 
     # criterion
     if config.LOSS.USE_OHEM:
-        sem_criterion = OhemCrossEntropy(ignore_label=config.TRAIN.IGNORE_LABEL,
-                                        thres=config.LOSS.OHEMTHRES,
-                                        min_kept=config.LOSS.OHEMKEEP,
-                                        weight=None)
+        # sem_criterion = OhemCrossEntropy(ignore_label=config.TRAIN.IGNORE_LABEL,
+        #                                 thres=config.LOSS.OHEMTHRES,
+        #                                 min_kept=config.LOSS.OHEMKEEP,
+        #                                 weight=train_dataset.class_weights)
+            sem_criterion = OhemCrossEntropy(ignore_label=config.TRAIN.IGNORE_LABEL,
+                                    thres=config.LOSS.OHEMTHRES,
+                                    min_kept=config.LOSS.OHEMKEEP,)
     else:
-        sem_criterion = CrossEntropy(ignore_label=config.TRAIN.IGNORE_LABEL,
-                                    weight=None)
+        # sem_criterion = CrossEntropy(ignore_label=config.TRAIN.IGNORE_LABEL,
+        #                             weight=train_dataset.class_weights)
+                sem_criterion = CrossEntropy(ignore_label=config.TRAIN.IGNORE_LABEL,)
 
     bd_criterion = BondaryLoss()
     
@@ -184,7 +187,6 @@ def main():
                   trainloader, optimizer, model, writer_dict)
 
         if flag_rm == 1 or (epoch % 5 == 0):
-            print("validate!!")
             valid_loss, mean_IoU, IoU_array = validate(config, 
                         testloader, model, writer_dict)
         if flag_rm == 1:
@@ -214,7 +216,7 @@ def main():
 
     writer_dict['writer'].close()
     end = timeit.default_timer()
-    logger.info('Hours: %d' % np.int64((end-start)/3600))
+    logger.info('Hours: %d' % np.int((end-start)/3600))
     logger.info('Done')
 
 if __name__ == '__main__':

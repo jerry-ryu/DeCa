@@ -6,9 +6,7 @@ import os
 
 import cv2
 import numpy as np
-from PIL import Image
 
-import torch
 from .base_dataset import BaseDataset
 
 def remove_leading_slash(s):
@@ -39,27 +37,25 @@ class Sunrgbd(BaseDataset):
         self.list_path = list_path
         with open(self.list_path, 'r') as f:
             self.filenames = f.readlines()
+            
         self.num_classes = num_classes
 
         self.multi_scale = multi_scale
         self.flip = flip
         
         self.bd_dilate_size = bd_dilate_size
-        
+        self.base_size = base_size
         self.mode = mode
         
+    def __len__(self):
+        return len(self.filenames)
+            
     def resize_image(self, image, mode = "image"):
         if mode == "image":
-            h, w, _ = image.shape
-            new_h = (h // 8) * 8
-            new_w = (w // 8) * 8
-            image = cv2.resize(image, (new_w, new_h),
+            image = cv2.resize(image, (self.base_size, self.base_size),
                            interpolation=cv2.INTER_LINEAR)
         else:
-            h, w  = image.shape
-            new_h = (h // 8) * 8
-            new_w = (w // 8) * 8
-            image = cv2.resize(image, (new_w, new_h),
+            image = cv2.resize(image, (self.base_size, self.base_size),
                                interpolation=cv2.INTER_NEAREST)
         return image
 
@@ -89,8 +85,7 @@ class Sunrgbd(BaseDataset):
         label = self.resize_image(label, mode = "label")
         
         image, label, edge = self.gen_sample(image, label, 
-                                self.multi_scale, self.flip, edge_size=self.bd_dilate_size, mode = self.mode)
-        
+                                self.multi_scale, self.flip, edge_size=self.bd_dilate_size)
         
 
         return image.copy(), label.copy(), edge.copy(), np.array(size), name
@@ -100,8 +95,6 @@ class Sunrgbd(BaseDataset):
         pred = self.inference(config, model, image)
         return pred
     
-    def __len__(self):
-        return len(self.filenames)
-
+   
         
         

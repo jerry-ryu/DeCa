@@ -70,7 +70,7 @@ def train(config, epoch, num_epoch, epoch_iters, base_lr,
                       batch_time.average(), [x['lr'] for x in optimizer.param_groups], ave_loss.average(),
                       ave_acc.average(), avg_sem_loss.average(), avg_bce_loss.average(),ave_loss.average()-avg_sem_loss.average()-avg_bce_loss.average())
             logging.info(msg)
-
+            
     writer.add_scalar('train_loss', ave_loss.average(), global_steps)
     writer_dict['train_global_steps'] = global_steps + 1
 
@@ -105,7 +105,7 @@ def validate(config, testloader, model, writer_dict):
                     config.TRAIN.IGNORE_LABEL
                 )
 
-            if idx % 2500 == 0:
+            if idx % 200 == 0:
                 print(idx)
 
             loss = losses.mean()

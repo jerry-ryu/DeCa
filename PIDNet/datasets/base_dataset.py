@@ -31,6 +31,7 @@ class BaseDataset(data.Dataset):
         self.files = []
 
     def __len__(self):
+        print('hello')
         return len(self.files)
 
     def input_transform(self, image, city=True):
@@ -58,14 +59,20 @@ class BaseDataset(data.Dataset):
         return pad_image
 
     def rand_crop(self, image, label, edge):
-        
-        new_h, new_w = image.shape[:-1]
+        h, w = image.shape[:-1]
+        image = self.pad_image(image, h, w, self.crop_size,
+                               (0.0, 0.0, 0.0))
+        label = self.pad_image(label, h, w, self.crop_size,
+                               (self.ignore_label,))
+        edge = self.pad_image(edge, h, w, self.crop_size,
+                               (0.0,))
+
+        new_h, new_w = label.shape
         x = random.randint(0, new_w - self.crop_size[1])
         y = random.randint(0, new_h - self.crop_size[0])
         image = image[y:y+self.crop_size[0], x:x+self.crop_size[1]]
         label = label[y:y+self.crop_size[0], x:x+self.crop_size[1]]
         edge = edge[y:y+self.crop_size[0], x:x+self.crop_size[1]]
-
 
         return image, label, edge
 
@@ -98,7 +105,7 @@ class BaseDataset(data.Dataset):
 
 
     def gen_sample(self, image, label,
-                   multi_scale=True, is_flip=True, edge_pad=True, edge_size=4, city=True, mode = "train"):
+                   multi_scale=True, is_flip=True, edge_pad=True, edge_size=4, city=True):
         
         edge = cv2.Canny(label, 0.1, 0.2)
         kernel = np.ones((edge_size, edge_size), np.uint8)
@@ -108,10 +115,7 @@ class BaseDataset(data.Dataset):
         edge = (cv2.dilate(edge, kernel, iterations=1)>50)*1.0
         
         if multi_scale:
-            if mode == "train":
-                rand_scale = random.randint(10, self.scale_factor) / 10.0
-            else:
-                rand_scale = 1.0
+            rand_scale = 0.5 + random.randint(0, self.scale_factor) / 10.0
             image, label, edge = self.multi_scale_aug(image, label, edge,
                                                 rand_scale=rand_scale)
 

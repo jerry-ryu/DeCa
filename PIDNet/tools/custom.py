@@ -81,7 +81,7 @@ if __name__ == '__main__':
     model.eval()
     with torch.no_grad():
         for img_path in images_list:
-            img_name = img_path.split("/")[-1]
+            img_name = img_path.split("\\")[-1]
             img = cv2.imread(os.path.join(args.r, img_name),
                                cv2.IMREAD_COLOR)
             sv_img = np.zeros_like(img).astype(np.uint8)
