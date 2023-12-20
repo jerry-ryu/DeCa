@@ -1,0 +1,58 @@
+2023-12-20 09:35:26,451 Namespace(cfg='/mnt/RG/teacher_student/configs/auto/pidnet_small_auto.yaml', seed=304, opts=[])
+2023-12-20 09:35:26,451 AUTO_RESUME: False
+CUDNN:
+  BENCHMARK: True
+  DETERMINISTIC: False
+  ENABLED: True
+DATASET:
+  DATASET: auto
+  EXTRA_TRAIN_SET: 
+  NUM_CLASSES: 5
+  ROOT: /mnt/RG/dataset/train
+  TEST_SET: /mnt/RG/auto_train_files_with_gt.txt
+  TRAIN_SET: /mnt/RG/auto_train_files_with_gt.txt
+GPUS: (0,)
+LOG_DIR: log
+LOSS:
+  BALANCE_WEIGHTS: [1.0]
+  CLASS_BALANCE: False
+  OHEMKEEP: 131072
+  OHEMTHRES: 0.9
+  SB_WEIGHTS: 1.0
+  USE_OHEM: True
+MODEL:
+  ALIGN_CORNERS: True
+  NAME: pidnet_small
+  NUM_OUTPUTS: 1
+  PRETRAINED: pretrained_models/imagenet/PIDNet_S_ImageNet.pth.tar
+OUTPUT_DIR: output
+PIN_MEMORY: True
+PRINT_FREQ: 10
+TEST:
+  BASE_SIZE: 512
+  BATCH_SIZE_PER_GPU: 1
+  FLIP_TEST: False
+  IMAGE_SIZE: [640, 480]
+  MODEL_FILE: 
+  MULTI_SCALE: False
+  OUTPUT_INDEX: 1
+TRAIN:
+  BASE_SIZE: 512
+  BATCH_SIZE_PER_GPU: 4
+  BEGIN_EPOCH: 0
+  END_EPOCH: 400
+  EXTRA_EPOCH: 0
+  EXTRA_LR: 0.001
+  FLIP: False
+  IGNORE_LABEL: 255
+  IMAGE_SIZE: [640, 480]
+  LR: 0.01
+  MOMENTUM: 0.9
+  MULTI_SCALE: False
+  NESTEROV: False
+  OPTIMIZER: sgd
+  RESUME: False
+  SCALE_FACTOR: 32
+  SHUFFLE: True
+  WD: 0.0005
+WORKERS: 6

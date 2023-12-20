@@ -1,5 +1,8 @@
+import os.path as osp
+import sys
 import glob
 import os
+import cv2
 
 import numpy as np
 import torch
@@ -8,10 +11,18 @@ from PIL import Image
 from torchvision import transforms
 from tqdm import tqdm
 
-import model_io
-import utils
-from models import UnetAdaptiveBins
+def add_path(path):
+    if path not in sys.path:
+        sys.path.insert(0, path)
 
+this_dir = osp.dirname(__file__)
+
+main_path = osp.join(this_dir)
+add_path(main_path)
+
+import AdaBins.model_io as model_io
+import AdaBins.utils as utils
+from AdaBins.models import UnetAdaptiveBins
 
 def _is_pil_image(img):
     return isinstance(img, Image.Image)
@@ -19,7 +30,6 @@ def _is_pil_image(img):
 
 def _is_numpy_image(img):
     return isinstance(img, np.ndarray) and (img.ndim in {2, 3})
-
 
 class ToTensor(object):
     def __init__(self):
@@ -146,6 +156,9 @@ class InferenceHelper:
             save_path = os.path.join(out_dir, basename + ".png")
 
             Image.fromarray(final.squeeze()).save(save_path)
+
+         
+        
 
 
 if __name__ == '__main__':
